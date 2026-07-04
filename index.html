@@ -1,245 +1,384 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>IFTAS DNI Formatter</title>
     <script src="https://cdn.tailwindcss.com"></script>
-  </head>
+</head>
 
-  <body class="min-h-screen bg-slate-950 text-slate-100">
-    <main
-      class="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-5 py-8 sm:px-6 lg:px-8"
-    >
-      <header class="mb-8">
-        <div
-          class="mb-3 inline-flex items-center rounded-full border border-slate-800 bg-slate-900/80 px-3 py-1 text-xs font-medium text-slate-400"
-        >
-          Local CSV parser · no upload required
-        </div>
-
-        <div
-          class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
-        >
-          <div>
-            <h1
-              class="text-3xl font-bold tracking-tight text-white sm:text-4xl"
-            >
-              IFTAS DNI Formatter
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-              Paste the IFTAS DNI CSV below and convert it into one domain per
-              line.
-            </p>
-          </div>
-
-          <a
-            href="https://about.iftas.org/library/iftas-dni-list/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800"
-          >
-            View source
-          </a>
-        </div>
-      </header>
-
-      <section class="grid flex-1 gap-5 lg:grid-cols-2">
-        <div
-          class="flex min-h-[520px] flex-col rounded-2xl border border-slate-800 bg-slate-900/70 shadow-2xl shadow-black/20"
-        >
-          <div
-            class="flex items-center justify-between border-b border-slate-800 px-4 py-3"
-          >
-            <div>
-              <h2 class="font-semibold text-white">CSV input</h2>
-              <p class="text-xs text-slate-500">
-                Expected header: <code>#domain</code>
-              </p>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+    <main class="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-5 py-8 sm:px-6 lg:px-8">
+        <header class="mb-8">
+            <div
+                class="mb-3 inline-flex items-center rounded-full border border-slate-800 bg-slate-900/80 px-3 py-1 text-xs font-medium text-slate-400">
+                Client side conversion &nbsp;&nbsp;·&nbsp;&nbsp; hash fragment shares
+                &nbsp;&nbsp;·&nbsp;&nbsp; privacy friendly
             </div>
 
-            <button
-              id="clearBtn"
-              type="button"
-              class="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800 hover:text-slate-100"
-            >
-              Clear
-            </button>
-          </div>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                        IFTAS DNI Formatter
+                    </h1>
 
-          <textarea
-            id="csvInput"
-            spellcheck="false"
-            class="min-h-0 flex-1 resize-none rounded-b-2xl bg-transparent p-4 font-mono text-sm leading-6 text-slate-100 outline-none placeholder:text-slate-600"
-            placeholder="#domain,#severity,#reject_media,#reject_reports,#public_comment,#obfuscate&#10;example.com,suspend,FALSE,FALSE,iftas:hate-speech;online-harassment,TRUE&#10;example.org,suspend,FALSE,FALSE,iftas:hate-speech;online-harassment,TRUE"
-          ></textarea>
-        </div>
+                    <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                        Paste the IFTAS DNI CSV and convert it into one domain per line.
+                        You can also create a shareable URL for short custom lists.
+                    </p>
+                </div>
 
-        <div
-          class="flex min-h-[520px] flex-col rounded-2xl border border-slate-800 bg-slate-900/70 shadow-2xl shadow-black/20"
-        >
-          <div
-            class="flex flex-col gap-3 border-b border-slate-800 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div>
-              <h2 class="font-semibold text-white">Domains</h2>
-              <p id="countLabel" class="text-xs text-slate-500">
-                0 domains extracted
-              </p>
+                <a href="https://about.iftas.org/library/iftas-dni-list/" target="_blank" rel="noopener noreferrer"
+                    class="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800">
+                    View IFTAS DNI source
+                </a>
+            </div>
+        </header>
+
+        <section class="grid flex-1 gap-5 lg:grid-cols-2">
+            <div
+                class="flex min-h-[520px] flex-col rounded-2xl border border-slate-800 bg-slate-900/70 shadow-2xl shadow-black/20">
+                <div
+                    class="flex flex-col gap-3 border-b border-slate-800 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="font-semibold text-white">CSV input</h2>
+                        <p class="text-xs text-slate-500">
+                            Expected header: <code>#domain</code>
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button id="shareBtn" type="button"
+                            class="rounded-lg border border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:bg-slate-800 hover:text-slate-100 disabled:cursor-not-allowed disabled:border-slate-800 disabled:text-slate-600"
+                            disabled>
+                            Copy share URL
+                        </button>
+
+                        <button id="clearBtn" type="button"
+                            class="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800 hover:text-slate-100">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+
+                <textarea id="csvInput" spellcheck="false"
+                    class="min-h-0 flex-1 resize-none rounded-b-2xl bg-transparent p-4 font-mono text-sm leading-6 text-slate-100 outline-none placeholder:text-slate-600"
+                    placeholder="#domain,#severity,#reject_media,#reject_reports,#public_comment,#obfuscate&#10;example.com,suspend,FALSE,FALSE,iftas:hate-speech;online-harassment,TRUE&#10;example.org,suspend,FALSE,FALSE,iftas:hate-speech;online-harassment,TRUE"></textarea>
             </div>
 
-            <button
-              id="copyBtn"
-              type="button"
-              disabled
-              class="inline-flex items-center justify-center rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
-            >
-              Copy domains
-            </button>
-          </div>
+            <div
+                class="flex min-h-[520px] flex-col rounded-2xl border border-slate-800 bg-slate-900/70 shadow-2xl shadow-black/20">
+                <div
+                    class="flex flex-col gap-3 border-b border-slate-800 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="font-semibold text-white">Domains</h2>
+                        <p id="countLabel" class="text-xs text-slate-500">
+                            0 domains extracted
+                        </p>
+                    </div>
 
-          <textarea
-            id="domainOutput"
-            readonly
-            spellcheck="false"
-            class="min-h-0 flex-1 resize-none bg-transparent p-4 font-mono text-sm leading-6 text-slate-100 outline-none placeholder:text-slate-600"
-            placeholder="Extracted domains will appear here..."
-          ></textarea>
+                    <button id="copyBtn" type="button" disabled
+                        class="inline-flex items-center justify-center rounded-xl bg-blue-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400">
+                        Copy domains
+                    </button>
+                </div>
 
-          <div
-            id="status"
-            class="min-h-10 border-t border-slate-800 px-4 py-3 text-sm text-slate-500"
-          >
-            Paste a CSV to begin.
-          </div>
-        </div>
-      </section>
+                <textarea id="domainOutput" readonly spellcheck="false"
+                    class="min-h-0 flex-1 resize-none bg-transparent p-4 font-mono text-sm leading-6 text-slate-100 outline-none placeholder:text-slate-600"
+                    placeholder="Extracted domains will appear here..."></textarea>
+
+                <div id="status" class="min-h-10 border-t border-slate-800 px-4 py-3 text-sm text-slate-500">
+                    Paste a CSV to begin.
+                </div>
+            </div>
+        </section>
     </main>
 
     <script>
-      const csvInput = document.getElementById("csvInput");
-      const domainOutput = document.getElementById("domainOutput");
-      const copyBtn = document.getElementById("copyBtn");
-      const clearBtn = document.getElementById("clearBtn");
-      const countLabel = document.getElementById("countLabel");
-      const statusEl = document.getElementById("status");
+        const csvInput = document.getElementById("csvInput");
+        const domainOutput = document.getElementById("domainOutput");
+        const copyBtn = document.getElementById("copyBtn");
+        const shareBtn = document.getElementById("shareBtn");
+        const clearBtn = document.getElementById("clearBtn");
+        const countLabel = document.getElementById("countLabel");
+        const statusEl = document.getElementById("status");
 
-      function parseCsvLine(line) {
-        const cells = [];
-        let current = "";
-        let inQuotes = false;
+        const SHARE_PARAM = "csv";
+        const LONG_URL_WARNING_LENGTH = 8000;
 
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-          const next = line[i + 1];
+        function parseCsvLine(line) {
+            const cells = [];
+            let current = "";
+            let inQuotes = false;
 
-          if (char === '"' && inQuotes && next === '"') {
-            current += '"';
-            i++;
-            continue;
-          }
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const next = line[i + 1];
 
-          if (char === '"') {
-            inQuotes = !inQuotes;
-            continue;
-          }
+                if (char === '"' && inQuotes && next === '"') {
+                    current += '"';
+                    i++;
+                    continue;
+                }
 
-          if (char === "," && !inQuotes) {
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                    continue;
+                }
+
+                if (char === "," && !inQuotes) {
+                    cells.push(current.trim());
+                    current = "";
+                    continue;
+                }
+
+                current += char;
+            }
+
             cells.push(current.trim());
-            current = "";
-            continue;
-          }
-
-          current += char;
+            return cells;
         }
 
-        cells.push(current.trim());
-        return cells;
-      }
-
-      function normalizeHeader(value) {
-        return value.trim().replace(/^#/, "").toLowerCase();
-      }
-
-      function extractDomains(csv) {
-        const lines = csv
-          .replace(/\r\n/g, "\n")
-          .replace(/\r/g, "\n")
-          .split("\n")
-          .map((line) => line.trim())
-          .filter(Boolean);
-
-        if (!lines.length) {
-          return [];
+        function normalizeHeader(value) {
+            return value.trim().replace(/^#/, "").toLowerCase();
         }
 
-        const rows = lines.map(parseCsvLine);
-        const header = rows[0].map(normalizeHeader);
-        const domainIndex = header.indexOf("domain");
-
-        const dataRows = domainIndex >= 0 ? rows.slice(1) : rows;
-        const index = domainIndex >= 0 ? domainIndex : 0;
-
-        const domains = dataRows
-          .map((row) => (row[index] || "").trim())
-          .map((domain) =>
-            domain.replace(/^https?:\/\//i, "").replace(/\/.*$/, ""),
-          )
-          .filter((domain) => domain && domain.includes("."));
-
-        return [...new Set(domains)];
-      }
-
-      function updateOutput() {
-        const domains = extractDomains(csvInput.value);
-        const output = domains.join("\n");
-
-        domainOutput.value = output;
-        countLabel.textContent = `${domains.length} ${domains.length === 1 ? "domain" : "domains"} extracted`;
-        copyBtn.disabled = domains.length === 0;
-
-        if (!csvInput.value.trim()) {
-          statusEl.textContent = "Paste a CSV to begin.";
-        } else if (!domains.length) {
-          statusEl.textContent =
-            "No domains found. Make sure the CSV includes a #domain column or domains in the first column.";
-        } else {
-          statusEl.textContent = "Ready to copy.";
-        }
-      }
-
-      async function copyDomains() {
-        const text = domainOutput.value.trim();
-
-        if (!text) {
-          return;
+        function normalizeDomain(value) {
+            return value
+                .trim()
+                .replace(/^https?:\/\//i, "")
+                .replace(/^@/, "")
+                .replace(/\/.*$/, "")
+                .replace(/\.$/, "")
+                .toLowerCase();
         }
 
-        try {
-          await navigator.clipboard.writeText(text);
-          statusEl.textContent = "Copied domains to clipboard.";
-          copyBtn.textContent = "Copied";
-
-          setTimeout(() => {
-            copyBtn.textContent = "Copy domains";
-          }, 1200);
-        } catch {
-          domainOutput.select();
-          document.execCommand("copy");
-          statusEl.textContent = "Copied domains to clipboard.";
+        function isLikelyDomain(value) {
+            return /^[a-z0-9.-]+\.[a-z]{2,}$/i.test(value);
         }
-      }
 
-      csvInput.addEventListener("input", updateOutput);
-      copyBtn.addEventListener("click", copyDomains);
+        function extractDomains(csv) {
+            const lines = csv
+                .replace(/\r\n/g, "\n")
+                .replace(/\r/g, "\n")
+                .split("\n")
+                .map((line) => line.trim())
+                .filter(Boolean);
 
-      clearBtn.addEventListener("click", () => {
-        csvInput.value = "";
+            if (!lines.length) {
+                return [];
+            }
+
+            const rows = lines.map(parseCsvLine);
+            const header = rows[0].map(normalizeHeader);
+            const domainIndex = header.indexOf("domain");
+
+            const index = domainIndex >= 0 ? domainIndex : 0;
+            const dataRows = domainIndex >= 0 ? rows.slice(1) : rows;
+
+            const domains = dataRows
+                .map((row) => normalizeDomain(row[index] || ""))
+                .filter(isLikelyDomain);
+
+            return [...new Set(domains)];
+        }
+
+        function setStatus(message, type = "neutral") {
+            statusEl.textContent = message;
+
+            statusEl.classList.remove(
+                "text-slate-500",
+                "text-emerald-400",
+                "text-amber-400",
+                "text-red-400",
+            );
+
+            if (type === "success") {
+                statusEl.classList.add("text-emerald-400");
+            } else if (type === "warning") {
+                statusEl.classList.add("text-amber-400");
+            } else if (type === "error") {
+                statusEl.classList.add("text-red-400");
+            } else {
+                statusEl.classList.add("text-slate-500");
+            }
+        }
+
+        function updateOutput() {
+            const csv = csvInput.value;
+            const domains = extractDomains(csv);
+            const output = domains.join("\n");
+
+            domainOutput.value = output;
+            countLabel.textContent = `${domains.length} ${domains.length === 1 ? "domain" : "domains"} extracted`;
+
+            copyBtn.disabled = domains.length === 0;
+            shareBtn.disabled = csv.trim().length === 0;
+
+            if (!csv.trim()) {
+                setStatus("Paste a CSV to begin.");
+                return;
+            }
+
+            if (!domains.length) {
+                setStatus(
+                    "No domains found. Make sure the CSV includes a #domain column or domains in the first column.",
+                    "warning",
+                );
+                return;
+            }
+
+            setStatus("Ready to copy.");
+        }
+
+        function getSharedCsvFromUrl() {
+            const hash = window.location.hash.startsWith("#")
+                ? window.location.hash.slice(1)
+                : window.location.hash;
+
+            if (hash) {
+                const hashParams = new URLSearchParams(hash);
+                const hashCsv = hashParams.get(SHARE_PARAM);
+
+                if (hashCsv) {
+                    return hashCsv;
+                }
+            }
+
+            const queryParams = new URLSearchParams(window.location.search);
+            const queryCsv = queryParams.get(SHARE_PARAM);
+
+            if (queryCsv) {
+                return queryCsv;
+            }
+
+            return "";
+        }
+
+        function loadCsvFromUrl() {
+            const sharedCsv = getSharedCsvFromUrl();
+
+            if (!sharedCsv) {
+                return false;
+            }
+
+            csvInput.value = sharedCsv;
+            updateOutput();
+            setStatus("Loaded CSV from shared URL.", "success");
+
+            return true;
+        }
+
+        function createShareUrl() {
+            const csv = csvInput.value.trim();
+
+            if (!csv) {
+                return "";
+            }
+
+            const url = new URL(window.location.href);
+
+            url.search = "";
+            url.hash = `${SHARE_PARAM}=${encodeURIComponent(csv)}`;
+
+            return url.toString();
+        }
+
+        async function copyText(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+                return true;
+            }
+
+            const fallback = document.createElement("textarea");
+            fallback.value = text;
+            fallback.setAttribute("readonly", "");
+            fallback.style.position = "fixed";
+            fallback.style.top = "-9999px";
+            fallback.style.left = "-9999px";
+
+            document.body.appendChild(fallback);
+            fallback.select();
+
+            const copied = document.execCommand("copy");
+            document.body.removeChild(fallback);
+
+            return copied;
+        }
+
+        async function copyDomains() {
+            const text = domainOutput.value.trim();
+
+            if (!text) {
+                setStatus("No domains to copy.", "warning");
+                return;
+            }
+
+            try {
+                await copyText(text);
+
+                setStatus("Copied domains to clipboard.", "success");
+                copyBtn.textContent = "Copied";
+
+                setTimeout(() => {
+                    copyBtn.textContent = "Copy domains";
+                }, 1200);
+            } catch {
+                setStatus("Could not copy domains to clipboard.", "error");
+            }
+        }
+
+        async function copyShareUrl() {
+            const shareUrl = createShareUrl();
+
+            if (!shareUrl) {
+                setStatus("Paste a CSV before creating a share URL.", "warning");
+                return;
+            }
+
+            try {
+                await copyText(shareUrl);
+
+                shareBtn.textContent = "Copied";
+                setStatus("Copied share URL to clipboard.", "success");
+
+                if (shareUrl.length > LONG_URL_WARNING_LENGTH) {
+                    setStatus(
+                        "Copied share URL, but it is very long. Share URLs work best for short custom lists.",
+                        "warning",
+                    );
+                }
+
+                setTimeout(() => {
+                    shareBtn.textContent = "Copy share URL";
+                }, 1200);
+            } catch {
+                setStatus("Could not copy share URL to clipboard.", "error");
+            }
+        }
+
+        function clearAll() {
+            csvInput.value = "";
+            domainOutput.value = "";
+
+            if (window.location.hash || window.location.search) {
+                const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+
+            updateOutput();
+            csvInput.focus();
+        }
+
+        csvInput.addEventListener("input", updateOutput);
+        copyBtn.addEventListener("click", copyDomains);
+        shareBtn.addEventListener("click", copyShareUrl);
+        clearBtn.addEventListener("click", clearAll);
+
+        loadCsvFromUrl();
         updateOutput();
-        csvInput.focus();
-      });
-
-      updateOutput();
     </script>
-  </body>
+</body>
+
 </html>
